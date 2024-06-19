@@ -4,10 +4,14 @@ class Result:
     def __init__(self, status_code: int, message: str = '', data: List[Dict] = None):
         """
         Constructor for Result
-        :param status_code: The HTTP status code
-        :param message: The message to return with the response
-        :param data: The data to return with the response
+        :param status_code: Standard HTTP Status code
+        :param message: Human readable result
+        :param data: Python List of Dictionaries (or maybe just a single Dictionary on error)
         """
         self.status_code = int(status_code)
         self.message = str(message)
         self.data = data if data else []
+
+class BasicQuery:
+    def __init__(self, **kwargs) -> None:
+        self.__dict__.update(**kwargs)

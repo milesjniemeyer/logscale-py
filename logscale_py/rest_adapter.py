@@ -7,17 +7,17 @@ from logscale_py.exceptions import LogScalePyException
 from logscale_py.models import Result
 
 class RestAdapter:
-    def __init__(self, hostname: str, api_key: str, version: str = 'v1', ssl_verify: bool = True, logger: logging.Logger = None):
+    def __init__(self, hostname: str, api_token: str, version: str = 'v1', ssl_verify: bool = True, logger: logging.Logger = None):
         """
         Constructor for RestAdapter
         :param hostname: The hostname of the LogScale instance
-        :param api_key: The user's API key found under account in LogScale
+        :param api_token: The user's API token found under account in LogScale
         :param version: (optional) The version of the API. Normally, set to 'v1'
         :param ssl_verify: (optional) Normally set to True, but if having SSL/TLS cert validation issues, can turn off with False
         :param logger: (optional) If your app has a logger, pass it in here.
         """
         self.url = 'https://{}/api/{}/'.format(hostname, version)
-        self._api_key = api_key
+        self._api_key = api_token
         self._ssl_verify = ssl_verify
         if not ssl_verify:
             requests.packages.urllib3.disable_warnings()
@@ -25,7 +25,7 @@ class RestAdapter:
 
     def _do(self, http_method: str, endpoint: str, ep_params: Dict = None, data: Dict = None) -> Result:
         full_url = self.url + endpoint
-        headers = {'x-api-key': self._api_key}
+        headers = {'Authorization': f'Bearer {self.api_token}'}
         log_line_pre = f"method={http_method}, url={full_url}, params={ep_params}"
         log_line_post = ', '.join((log_line_pre, "success={}, status_code={}, message={}"))
         
