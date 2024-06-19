@@ -1,7 +1,9 @@
 import requests
 import requests.packages
 from typing import List, Dict
+from json import JSONDecodeError
 from logscale_py.exceptions import LogScalePyException
+from logscale_py.models import Result
 
 class RestAdapter:
     def __init__(self, hostname: str, api_key: str, version: str = 'v1', ssl_verify: bool = True):
@@ -11,24 +13,26 @@ class RestAdapter:
         if not ssl_verify:
             requests.packages.urllib3.disable_warnings()
 
-    def _do(self, http_method: str, endpoint: str, ep_params: Dict = None, data: Dict = None):
+    def _do(self, http_method: str, endpoint: str, ep_params: Dict = None, data: Dict = None) -> Result:
         full_url = self.url + endpoint
         headers = {'x-api-key': self._api_key}
         try:
             response = requests.request(method=http_method, url=full_url, verify=self._ssl_verify, headers=headers, params=ep_params, json=data)
         except requests.exceptions.RequestException as e:
             raise LogScalePyException('Request failed') from e
-        data_out = response.json()
-        if response.status_code >= 200 and response.status_code <= 299:
-            return data_out
-        raise Exception(data_out['message'])
+        try:
+            data_out = response.json()
+        except (ValueError, JSONDecodeError) as e:
+            raise LogScalePyException('Bad JSON in response') from e
+        if 299 >= response.status_code >= 200:
+            return Result(response.status_code, message=response.reason, data=data_out)
+        raise LogScalePyException(f'{response.status_code}: {response.reason}')
 
-    def get(self, endpoint: str, ep_params: Dict = None) -> List[Dict]:
+    def get(self, endpoint: str, ep_params: Dict = None) -> Result:
         return self._do(http_method='GET', endpoint=endpoint, ep_params=ep_params)
 
-    def post(self, endpoint: str, ep_params: Dict = None, data: Dict = None) -> List[Dict]:
+    def post(self, endpoint: str, ep_params: Dict = None, data: Dict = None) -> Result:
         return self._do(http_method='POST', endpoint=endpoint, ep_params=ep_params, data=data)
     
-    def delete(self, endpoint: str, ep_params: Dict = None, data: Dict = None) -> List[Dict]:
+    def delete(self, endpoint: str, ep_params: Dict = None, data: Dict = None) -> Result:
         return self._do(http_method='DELETE', endpoint=endpoint, ep_params=ep_params, data=data)
-    
