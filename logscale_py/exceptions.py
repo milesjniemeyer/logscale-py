@@ -1,0 +1,2 @@
+class LogScalePyException(Exception):
+    pass
