@@ -11,7 +11,3 @@ class Result:
         self.status_code = int(status_code)
         self.message = str(message)
         self.data = data if data else []
-
-class BasicQuery:
-    def __init__(self, **kwargs) -> None:
-        self.__dict__.update(**kwargs)

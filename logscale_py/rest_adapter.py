@@ -1,3 +1,4 @@
+import json
 import logging
 import requests
 import requests.packages
@@ -17,7 +18,7 @@ class RestAdapter:
         :param logger: (optional) If your app has a logger, pass it in here.
         """
         self.url = 'https://{}/api/{}/'.format(hostname, version)
-        self._api_key = api_token
+        self._api_token = api_token
         self._ssl_verify = ssl_verify
         if not ssl_verify:
             requests.packages.urllib3.disable_warnings()
@@ -25,7 +26,7 @@ class RestAdapter:
 
     def _do(self, http_method: str, endpoint: str, ep_params: Dict = None, data: Dict = None) -> Result:
         full_url = self.url + endpoint
-        headers = {'Authorization': f'Bearer {self.api_token}'}
+        headers = {'Authorization': f'Bearer {self._api_token}', 'Accept': 'application/json'}
         log_line_pre = f"method={http_method}, url={full_url}, params={ep_params}"
         log_line_post = ', '.join((log_line_pre, "success={}, status_code={}, message={}"))
         
@@ -63,7 +64,7 @@ class RestAdapter:
 
     def post(self, endpoint: str, ep_params: Dict = None, data: Dict = None) -> Result:
         """
-        GET HTTP method
+        POST HTTP method
         :param endpoint: The endpoint on the LogScale API beging accessed
         :param ep_params: Parameters to be passed in the URL query string
         :param data: Parameters to be passed in the body of the request
@@ -72,7 +73,7 @@ class RestAdapter:
     
     def delete(self, endpoint: str, ep_params: Dict = None, data: Dict = None) -> Result:
         """
-        GET HTTP method
+        DELETE HTTP method
         :param endpoint: The endpoint on the LogScale API beging accessed
         :param ep_params: Parameters to be passed in the URL query string
         :param data: Parameters to be passed in the body of the request
