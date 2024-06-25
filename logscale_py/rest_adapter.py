@@ -40,7 +40,10 @@ class RestAdapter:
         
         # Deserialize the JSON output to Python object, or return failed Result on exception
         try:
-            data_out = response.json()
+            if response.content:
+                data_out = response.json()
+            else:
+                data_out = None
         except (ValueError, JSONDecodeError) as e:
             self._logger.error(msg=(log_line_post.format(False, None, e)))
             raise LogScalePyException('Bad JSON in response') from e
@@ -50,7 +53,7 @@ class RestAdapter:
         log_line = log_line_post.format(is_success, response.status_code, response.reason)
         if is_success:
             self._logger.debug(msg=(log_line))
-            return Result(response.status_code, message=response.reason, data=data_out)
+            return Result(status_code=response.status_code, message=response.reason, data=data_out)
         self._logger.error(msg=(log_line))
         raise LogScalePyException(f'{response.status_code}: {response.reason}')
 
@@ -58,7 +61,8 @@ class RestAdapter:
         """
         GET HTTP method
         :param endpoint: The endpoint on the LogScale API beging accessed
-        :ep_params: Parameters to be passed in the URL query string
+        :param ep_params: Parameters to be passed in the URL query string
+        :param stream: Boolean that sets whether the response is streamed or not
         """
         return self._do(http_method='GET', endpoint=endpoint, ep_params=ep_params, stream=stream)
 
@@ -71,11 +75,11 @@ class RestAdapter:
         """
         return self._do(http_method='POST', endpoint=endpoint, ep_params=ep_params, data=data, stream=stream)
     
-    def delete(self, endpoint: str, ep_params: Dict = None, data: Dict = None, stream: bool = False) -> Result:
+    def delete(self, endpoint: str, ep_params: Dict = None, stream: bool = False) -> Result:
         """
         DELETE HTTP method
         :param endpoint: The endpoint on the LogScale API beging accessed
         :param ep_params: Parameters to be passed in the URL query string
-        :param data: Parameters to be passed in the body of the request
+        :param stream: Boolean that sets whether the response is streamed or not
         """
-        return self._do(http_method='DELETE', endpoint=endpoint, ep_params=ep_params, data=data, stream=stream)
+        return self._do(http_method='DELETE', endpoint=endpoint, ep_params=ep_params)
