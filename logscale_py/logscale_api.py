@@ -51,3 +51,7 @@ class LogScaleAPI:
     def poll_query(self, repo: str, id: str) -> PollQuery:
         result = self._rest_adapter.get(endpoint=f'/repositories/{repo}/queryjobs/{id}')
         return PollQuery(result.data)
+    
+    def delete_query(self, repo:str, id:str) -> DeleteQuery:
+        result = self._rest_adapter.delete(endpoint=f'/repositories/{repo}/queryjobs/{id}')
+        return DeleteQuery(result.status_code)
