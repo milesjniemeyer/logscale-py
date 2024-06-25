@@ -48,6 +48,6 @@ class LogScaleAPI:
         result = self._rest_adapter.post(endpoint=f'/repositories/{repo}/queryjobs', data=data)
         return QueryJob(result.data)
     
-    def poll_query(self, repo: str, id: str):
+    def poll_query(self, repo: str, id: str) -> PollQuery:
         result = self._rest_adapter.get(endpoint=f'/repositories/{repo}/queryjobs/{id}')
-        return result.data
+        return PollQuery(result.data)
