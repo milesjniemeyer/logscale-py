@@ -44,3 +44,10 @@ class PollQuery:
 
     def __str__(self):
         return str(self.data)
+    
+class DeleteQuery:
+    def __init__(self, status_code):
+        self.status_code = status_code
+
+    def __str__(self):
+        return str(f'Request complete.')
