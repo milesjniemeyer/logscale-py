@@ -1,5 +1,5 @@
 # Python test files
-main.py
+main*.py
 app.py
 
 # Byte-compiled / optimized / DLL files

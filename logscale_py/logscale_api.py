@@ -1,12 +1,11 @@
 import logging
 from typing import Dict
 from logscale_py.rest_adapter import RestAdapter
-from logscale_py.exceptions import LogScalePyException
 from logscale_py.models import *
 
 class LogScaleAPI:
-    def __init__(self, hostname: str, api_token: str, version: str = 'v1', ssl_verify: bool = True, logger: logging.Logger = None):
-        self._rest_adapter = RestAdapter(hostname, api_token, version, ssl_verify, logger)
+    def __init__(self, hostname: str, api_token: str, version: str = 'v1', verify: str = None, logger: logging.Logger = None):
+        self._rest_adapter = RestAdapter(hostname, api_token, version, verify, logger)
 
     def search(self, repo: str, query_string: str, allow_event_skipping: bool = False, arguments: Dict = None, end: str = 'now', ingest_end: str = None, ingest_start: str = None, language_version: str = None, start: str = '24hours', time_zone_offset_minutes: int = None) -> Search:
         data = {'allowEventSkipping': allow_event_skipping,

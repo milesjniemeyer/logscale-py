@@ -1,14 +1,13 @@
-import json
 import logging
 import requests
 import requests.packages
 from json import JSONDecodeError
-from typing import List, Dict
+from typing import Dict
 from logscale_py.exceptions import LogScalePyException
 from logscale_py.models import *
 
 class RestAdapter:
-    def __init__(self, hostname: str, api_token: str, version: str = 'v1', ssl_verify: bool = True, logger: logging.Logger = None):
+    def __init__(self, hostname: str, api_token: str, version: str = 'v1', verify: str = None, logger: logging.Logger = None):
         """
         Constructor for RestAdapter
         :param hostname: The hostname of the LogScale instance
@@ -19,12 +18,18 @@ class RestAdapter:
         """
         self.url = 'https://{}/api/{}'.format(hostname, version)
         self._api_token = api_token
-        self._ssl_verify = ssl_verify
-        if not ssl_verify:
-            requests.packages.urllib3.disable_warnings()
+        self._verify = verify
         self._logger = logger or logging.getLogger(__name__)
 
     def _do(self, http_method: str, endpoint: str, ep_params: Dict = None, data: Dict = None, stream: bool = False) -> Result:
+        """
+        Request handler for HTTP methods
+        :param http_method: The HTTP method being used the make the request
+        :param endpoint: The endpoint on the LogScale API beging accessed
+        :param ep_params: Parameters to be passed in the URL query string
+        :param data: Parameters to be passed in the body of the request
+        :param stream: Specifies whether or not the connection should stream data
+        """
         full_url = self.url + endpoint
         headers = {'Authorization': f'Bearer {self._api_token}', 'Accept': 'application/json', 'Content-Type': 'application/json'}
         log_line_pre = f"method={http_method}, url={full_url}, params={ep_params}"
@@ -33,7 +38,7 @@ class RestAdapter:
         # Log HTTP params and perform an HTTP request, catching and re-raising any exceptions
         try:
             self._logger.debug(msg=log_line_pre)
-            response = requests.request(method=http_method, url=full_url, verify=self._ssl_verify, headers=headers, params=ep_params, json=data, stream=stream)
+            response = requests.request(method=http_method, url=full_url, verify=self._verify, headers=headers, params=ep_params, json=data, stream=stream)
         except requests.exceptions.RequestException as e:
             self._logger.error(msg=(str(e)))
             raise LogScalePyException('Request failed') from e
