@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Dict, List
 
 class Result:
     """
@@ -17,7 +17,7 @@ class Search:
     This class represents a Search object
     :param data: The list of dictionaries returned upon calling the search endpoint
     """
-    def __init__(self, data):
+    def __init__(self, data: List[Dict]):
         self.data = data
     
     def __str__(self):
@@ -28,7 +28,7 @@ class CreateQueryJob:
     This class represents a CreateQueryJob object
     :param data: The list of dictionaries returned upon calling the create_query_job endpoint
     """
-    def __init__(self, data):
+    def __init__(self, data: Dict):
         self.data = data
         self.hashed_query_on_view = data.get('hashedQueryOnView')
         self.id = data.get('id')
@@ -44,7 +44,7 @@ class PollQueryJob:
     This class represents a PollQueryJob object
     :param data: The list of dictionaries returned upon calling the create_query_job endpoint
     """
-    def __init__(self, data):
+    def __init__(self, data: List[Dict]):
         self.data = data
         self.cancelled = data.get('cancelled')
         self.done = data.get('done')
@@ -62,8 +62,8 @@ class DeleteQueryJob:
     This class represents a DeleteQueryJob object.
     :param status_code: The status code of the response from the Result class.
     """
-    def __init__(self, status_code):
+    def __init__(self, status_code: int):
         self.status_code = status_code
 
     def __str__(self):
-        return str(f'Request complete.')
+        return str(f'Query job successfully deleted.')
