@@ -1,4 +1,5 @@
 import logging
+from typing import Dict
 from logscale_py.rest_adapter import RestAdapter
 from logscale_py.exceptions import LogScalePyException
 from logscale_py.models import *
