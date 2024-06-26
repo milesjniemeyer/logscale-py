@@ -1,7 +1,6 @@
-# Testing Python files
+# Python test files
 main.py
 app.py
-test*.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
