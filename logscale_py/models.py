@@ -1,25 +1,33 @@
 from typing import Any, Dict, List
 
 class Result:
+    """
+    Simple response model to handle all returned data from the REST adapter
+    :param status_code: Standard HTTP Status code
+    :param message: Human readable result
+    :param data: Python list of dictionaries (or maybe just a single dictionary on error)
+    """
     def __init__(self, status_code: int, message: str = '', data: List[Dict] = None):
-        """
-        Constructor for Result
-        :param status_code: Standard HTTP Status code
-        :param message: Human readable result
-        :param data: Python List of Dictionaries (or maybe just a single Dictionary on error)
-        """
         self.status_code = int(status_code)
         self.message = str(message)
         self.data = data if data else []
 
-class Query:
+class Search:
+    """
+    This class represents a Search object
+    :param data: The list of dictionaries returned upon calling the search endpoint
+    """
     def __init__(self, data):
         self.data = data
     
     def __str__(self):
         return str(self.data)
     
-class QueryJob:
+class CreateQueryJob:
+    """
+    This class represents a CreateQueryJob object
+    :param data: The list of dictionaries returned upon calling the create_query_job endpoint
+    """
     def __init__(self, data):
         self.data = data
         self.hashed_query_on_view = data.get('hashedQueryOnView')
@@ -31,12 +39,16 @@ class QueryJob:
     def __str__(self):
         return str(self.data)
     
-class PollQuery:
+class PollQueryJob:
+    """
+    This class represents a PollQueryJob object
+    :param data: The list of dictionaries returned upon calling the create_query_job endpoint
+    """
     def __init__(self, data):
         self.data = data
         self.cancelled = data.get('cancelled')
         self.done = data.get('done')
-        self.events = Query(data.get('events')) if data.get('events') else None
+        self.events = Search(data.get('events')) if data.get('events') else None
         self.filter_matches = data.get('filterMatches')
         self.meta_data = data.get('metaData')
         self.query_event_distribution = data.get('queryEventDistribution')
@@ -45,7 +57,11 @@ class PollQuery:
     def __str__(self):
         return str(self.data)
     
-class DeleteQuery:
+class DeleteQueryJob:
+    """
+    This class represents a DeleteQueryJob object.
+    :param status_code: The status code of the response from the Result class.
+    """
     def __init__(self, status_code):
         self.status_code = status_code
 
